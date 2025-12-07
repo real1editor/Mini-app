@@ -1,0 +1,20 @@
+{
+  "name": "real1editor-telegram-webapp",
+  "version": "2.0.0",
+  "type": "module",
+  "description": "Real1Editor Website Optimized for Telegram Mini App",
+  "scripts": {
+    "dev": "vercel dev",
+    "start": "vercel dev",
+    "deploy": "vercel --prod"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "vercel": "^28.18.0"
+  },
+  "engines": {
+    "node": ">=18.x"
+  },
+  "author": "real1editor@gmail.com",
+  "license": "MIT"
+}
