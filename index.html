@@ -1,0 +1,2452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#0a0e17">
+    <title>Real1Editor</title>
+    
+    <!-- CRITICAL CSS (Above the fold) -->
+    <style>
+        /* ========================
+           CRITICAL STYLES ONLY
+           ======================== */
+        :root {
+          --primary-holo: #00f3ff;
+          --secondary-holo: #b967ff;
+          --accent-neon: #ff2a6d;
+          --deep-space: #0a0e17;
+          --space-dust: #1a1f35;
+          --void: #050810;
+          --text-glow: rgba(0, 243, 255, 0.7);
+          --glass: rgba(255, 255, 255, 0.03);
+          --glass-border: rgba(255, 255, 255, 0.08);
+          --card-radius: 14px;
+          --muted: rgba(255,255,255,0.65);
+        }
+
+        * { 
+            margin: 0; 
+            padding: 0; 
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        html, body { 
+            height: 100%; 
+            width: 100%;
+            overflow-x: hidden;
+            position: fixed;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: var(--deep-space);
+            color: #fff;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            touch-action: manipulation;
+            overscroll-behavior: none;
+        }
+
+        /* Quantum Initiation - Optimized */
+        #quantum-initiation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background: var(--void);
+            z-index: 99999;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            will-change: opacity, transform;
+        }
+
+        .initiation-spinner {
+            width: 60px;
+            height: 60px;
+            border: 3px solid rgba(0, 243, 255, 0.1);
+            border-top: 3px solid var(--primary-holo);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin-bottom: 15px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .initiation-text {
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+            font-size: 0.9rem;
+            color: var(--primary-holo);
+            text-align: center;
+            padding: 0 20px;
+        }
+
+        /* Hide all other content during load */
+        #intro-section,
+        main,
+        #chatbot-interface,
+        .beautiful-menu,
+        .menu-toggle,
+        #backToTop {
+            display: none !important;
+        }
+
+        /* Telegram WebApp specific */
+        .tg-ready {
+            height: 100vh;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+    </style>
+    
+    <!-- Preload fonts without blocking -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preload" as="style" onload="this.onload=null;this.rel='stylesheet'" href="https://fonts.googleapis.com/css2?family=Exo+2:wght@400;600&family=Orbitron:wght@400;700&display=swap">
+    <noscript>
+        <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@400;600&family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+    </noscript>
+    
+    <!-- Telegram WebApp SDK -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+</head>
+<body>
+    <!-- Loading screen -->
+    <div id="quantum-initiation">
+        <div class="initiation-spinner"></div>
+        <div class="initiation-text">INITIALIZING REAL1EDITOR</div>
+    </div>
+
+    <!-- Intro Section -->
+    <section id="intro-section">
+        <div class="holographic-display">
+            <div class="holo-grid"></div>
+            <div class="main-title">
+                <h1 class="glitch-text" data-text="REAL1EDITOR">REAL1EDITOR</h1>
+                <div class="title-sub">QUANTUM VIDEO EDITING SOLUTIONS</div>
+            </div>
+            <div class="ai-orb">
+                <div class="orb-ring"></div>
+                <div class="orb-glow"></div>
+            </div>
+            <div class="welcome-message">
+                <p>Welcome to the future of visual storytelling. I transform raw footage into cinematic experiences that transcend time and space.</p>
+                <div class="pulse-cta" onclick="hideIntro()">
+                    <div class="cta-orb">BEGIN TRANSMISSION</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Back to Top Button -->
+    <button class="back-to-top-btn" id="backToTop" title="Back to Top" onclick="scrollToTop()">
+        <span class="top-text">TOP</span>
+    </button>
+
+    <!-- AI Chatbot Interface -->
+    <div id="chatbot-interface" class="chatbot-container">
+        <div class="chat-bubble" id="chatBubble" onclick="toggleChat()">
+            <div class="chat-icon">👨‍💻</div>
+            <div class="chat-pulse"></div>
+        </div>
+        
+        <div class="chat-panel" id="chatPanel">
+            <div class="chat-header">
+                <h3>Real1Editor AI Assistant</h3>
+                <button class="close-chat" onclick="toggleChat()">×</button>
+            </div>
+            
+            <div class="chat-messages" id="chatMessages">
+                <div class="message bot-message">
+                    <div class="message-content">
+                        Hello! I'm your Real1Editor AI assistant. I can help you with:
+                        <br>• Services & Pricing
+                        <br>• Portfolio & Work Examples  
+                        <br>• Contact Information
+                        <br>• Booking Consultations
+                        <br><br>What would you like to know?
+                    </div>
+                </div>
+            </div>
+            
+            <div class="chat-input-container">
+                <input 
+                    type="text" 
+                    id="chatInput" 
+                    placeholder="Ask about video editing services..." 
+                    onkeypress="handleChatInput(event)"
+                />
+                <button class="send-button" onclick="sendMessage()">➤</button>
+            </div>
+            
+            <div class="chat-footer">
+                <small>Real1Editor AI • Instant Responses</small>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation Menu -->
+    <nav class="beautiful-menu" id="mainMenu">
+        <div class="menu-glow"></div>
+        <div class="menu-content">
+            <button class="menu-item" onclick="navTo('hero')">Home</button>
+            <button class="menu-item" onclick="navTo('about')">About</button>
+            <button class="menu-item" onclick="navTo('services')">Services</button>
+            <button class="menu-item" onclick="navTo('skills')">Skills</button>
+            <button class="menu-item" onclick="navTo('portfolio')">Portfolio</button>
+            <button class="menu-item" onclick="navTo('pricing')">Pricing</button>
+            <button class="menu-item" onclick="navTo('testimonials')">Testimonials</button>
+            <button class="menu-item" onclick="navTo('contact')">Transmission</button>
+            <button class="menu-item" onclick="navTo('contact-info')">Contact</button>
+        </div>
+    </nav>
+
+    <!-- Menu Toggle -->
+    <button class="menu-toggle" id="menuToggle" aria-label="Toggle menu">☰</button>
+
+    <!-- Background Canvas -->
+    <canvas id="bgCanvas"></canvas>
+
+    <!-- Main Content -->
+    <main id="main">
+        <!-- Hero Section -->
+        <section id="hero" class="section">
+            <div class="container">
+                <div class="holo-card" role="region" aria-labelledby="heroTitle">
+                    <div class="section-header">
+                        <h2 id="heroTitle" class="glitch-text" data-text="Real1Editor | Quantum Video Editing">Real1Editor | Quantum Video Editing</h2>
+                        <div class="holo-divider"></div>
+                    </div>
+                    <div style="text-align:center;">
+                        <p style="color:rgba(255,255,255,0.85);max-width:820px;margin:0 auto 18px;" class="reveal">
+                            Cinematic stories, seamless motion, and quantum-level edits.
+                        </p>
+                        <div style="margin-top:18px;display:flex;gap:12px;justify-content:center;">
+                            <button class="menu-item" onclick="navTo('portfolio')">🎬 Enter Studio</button>
+                            <button class="menu-item" onclick="openLink('https://linktr.ee/real1editor')">🔗 Connect Hub</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- About Section -->
+        <section id="about" class="section">
+            <div class="container">
+                <div class="holo-card about-grid" role="region" aria-labelledby="aboutTitle">
+                    <div class="avatar-frame" aria-hidden="true">
+                        <div class="avatar-glitch"></div>
+                    </div>
+                    <div>
+                        <div class="section-header">
+                            <h2 id="aboutTitle">About</h2>
+                            <div class="holo-divider"></div>
+                        </div>
+                        <div class="bio-data reveal">
+                            <p>From rough cuts to polished visuals, I specialize in editing, motion design, and storytelling that connect with audiences.</p>
+                            <div class="data-stats" style="margin-top:18px;">
+                                <div class="stat"><div class="stat-value">2030</div><div class="stat-label">Era</div></div>
+                                <div class="stat"><div class="stat-value">∞</div><div class="stat-label">Creativity</div></div>
+                                <div class="stat"><div class="stat-value">24/7</div><div class="stat-label">Broadcasts</div></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Services Section -->
+        <section id="services" class="section">
+            <div class="container">
+                <div class="holo-card" role="region" aria-labelledby="servicesTitle">
+                    <div class="section-header">
+                        <h2 id="servicesTitle"> Services </h2>
+                        <div class="holo-divider"></div>
+                    </div>
+                    <div class="services-grid reveal">
+                        <div class="service-card">
+                            <div class="service-icon">🎬</div>
+                            <h3>Video Editing</h3>
+                            <p>Professional editing for commercials, documentaries, social media, and corporate videos with precision cutting and seamless transitions.</p>
+                            <div class="service-features">
+                                <div class="service-feature">Commercial Advertising</div>
+                                <div class="service-feature">Documentary Storytelling</div>
+                                <div class="service-feature">Social Media Content</div>
+                                <div class="service-feature">Corporate Videos</div>
+                            </div>
+                        </div>
+                        
+                        <div class="service-card">
+                            <div class="service-icon">🌈</div>
+                            <h3>Color Grading</h3>
+                            <p>Expert color correction and creative grading to enhance visual tone and mood beyond conventional perception.</p>
+                            <div class="service-features">
+                                <div class="service-feature">Cinematic Color Palettes</div>
+                                <div class="service-feature">Mood Enhancement</div>
+                                <div class="service-feature">Color Correction</div>
+                                <div class="service-feature">Custom LUTs</div>
+                            </div>
+                        </div>
+                        
+                        <div class="service-card">
+                            <div class="service-icon">🌀</div>
+                            <h3>Motion Graphics</h3>
+                            <p>Creating engaging animated elements, titles, and visual effects that enhance your video content across dimensions.</p>
+                            <div class="service-features">
+                                <div class="service-feature">Animated Titles</div>
+                                <div class="service-feature">Lower Thirds</div>
+                                <div class="service-feature">Visual Effects</div>
+                                <div class="service-feature">Transitions</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Skills Section -->
+        <section id="skills" class="section">
+            <div class="container">
+                <div class="holo-card" role="region" aria-labelledby="skillsTitle">
+                    <div class="section-header">
+                        <h2 id="skillsTitle">Skills</h2>
+                        <div class="holo-divider"></div>
+                    </div>
+
+                    <div class="skills-container reveal">
+                        <div class="skills-orb" id="skillsOrb" aria-hidden="false">
+                            <div class="skill-node" data-index="0">
+                                <div class="node-core"></div>
+                                <div class="skill-name">Cinematic Editing</div>
+                            </div>
+                            <div class="skill-node" data-index="1">
+                                <div class="node-core"></div>
+                                <div class="skill-name">Color Grading</div>
+                            </div>
+                            <div class="skill-node" data-index="2">
+                                <div class="node-core"></div>
+                                <div class="skill-name">Motion Graphics</div>
+                            </div>
+                            <div class="skill-node" data-index="3">
+                                <div class="node-core"></div>
+                                <div class="skill-name">Sound Design</div>
+                            </div>
+                            <div class="skill-node" data-index="4">
+                                <div class="node-core"></div>
+                                <div class="skill-name">Visual Effects (VFX)</div>
+                            </div>
+                            
+                            <div class="skill-node" data-index="5">
+                                <div class="node-core"></div>
+                                <div class="skill-name">3D Animation</div>
+                            </div>
+                            <div class="skill-node" data-index="6">
+                                <div class="node-core"></div>
+                                <div class="skill-name">Virtual Production</div>
+                            </div>
+                        </div>
+
+                        <div class="skill-details">
+                            <div id="detail0" class="detail-panel active">
+                                <h3>Cinematic Editing</h3>
+                                <p>Crafting seamless cuts, storytelling flow, and dynamic pacing that transform raw footage into cinematic experiences.</p>
+                                <div class="tech-tags"><span class="tech-tag">Premiere Pro</span><span class="tech-tag">CapCut Pro</span><span class="tech-tag">DaVinci Resolve</span></div>
+                            </div>
+
+                            <div id="detail1" class="detail-panel">
+                                <h3>Color Grading</h3>
+                                <p>Balancing tones, enhancing mood, and creating cinematic palettes that bring depth and emotion to every scene.</p>
+                                <div class="tech-tags"><span class="tech-tag">DaVinci Resolve</span><span class="tech-tag">Lumetri</span><span class="tech-tag">LUTs</span></div>
+                            </div>
+
+                            <div id="detail2" class="detail-panel">
+                                <h3>Motion Graphics</h3>
+                                <p>Designing titles, lower thirds, and smooth animations to make stories more engaging and professional.</p>
+                                <div class="tech-tags"><span class="tech-tag">After Effects</span><span class="tech-tag">Motion</span><span class="tech-tag">Templates</span></div>
+                            </div>
+
+                            <div id="detail3" class="detail-panel">
+                                <h3>Sound Design</h3>
+                                <p>Editing dialogue, adding effects, and mixing soundtracks for a polished, immersive audiovisual experience.</p>
+                                <div class="tech-tags"><span class="tech-tag">Audition</span><span class="tech-tag">Pro Tools</span><span class="tech-tag">SFX Libraries</span></div>
+                            </div>
+
+                            <div id="detail4" class="detail-panel">
+                                <h3>Visual Effects (VFX)</h3>
+                                <p>Compositing, masking, and integrating effects that elevate footage with creative and futuristic visuals.</p>
+                                <div class="tech-tags"><span class="tech-tag">After Effects</span><span class="tech-tag">Mocha</span><span class="tech-tag">Blender</span></div>
+                            </div>
+                            
+                            <div id="detail5" class="detail-panel">
+                                <h3>3D Animation</h3>
+                                <p>Creating immersive 3D animations, character rigging, and environmental modeling that bring digital worlds to life with realistic physics and dynamic movement.</p>
+                                <div class="tech-tags">
+                                    <span class="tech-tag">Blender</span>
+                                    <span class="tech-tag">Cinema 4D</span>
+                                    <span class="tech-tag">Maya</span>
+                                    <span class="tech-tag">Unity</span>
+                                </div>
+                            </div>
+                            
+                            <div id="detail6" class="detail-panel">
+                                <h3>Virtual Production</h3>
+                                <p>Integrating real-time rendering, LED walls, and virtual sets to create seamless production environments that blend physical and digital filmmaking.</p>
+                                <div class="tech-tags">
+                                    <span class="tech-tag">Unreal Engine</span>
+                                    <span class="tech-tag">LED Wall Tech</span>
+                                    <span class="tech-tag">Real-time Rendering</span>
+                                    <span class="tech-tag">Camera Tracking</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Portfolio Section -->
+        <section id="portfolio" class="section">
+            <div class="container">
+                <div class="holo-card" role="region" aria-labelledby="portfolioTitle">
+                    <div class="section-header">
+                        <h2 id="portfolioTitle">Portfolio</h2>
+                        <div class="holo-divider"></div>
+                    </div>
+
+                    <div class="portfolio-grid reveal">
+                        <div class="holo-card project">
+                            <div class="card-glitch"></div>
+                            <div style="padding:12px">
+                                <div class="video-portal">
+                                    <div class="lazy-iframe" data-src="https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=0&mute=1&loop=0&controls=1&modestbranding=1"></div>
+                                </div>
+                            </div>
+                            <div class="card-content">
+                                <h3>Cinematic Commercial</h3>
+                                <p>Professional commercial editing with seamless transitions and cinematic color grading for brand storytelling.</p>
+                                <div style="display:flex;gap:8px;margin-top:8px">
+                                    <button class="menu-item" onclick="openProject('https://youtu.be/dQw4w9WgXcQ')">Watch Demo</button>
+                                    <button class="menu-item" onclick="openLink('https://linktr.ee/real1editor')">More Info</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="holo-card project">
+                            <div class="card-glitch"></div>
+                            <div style="padding:12px">
+                                <div class="tiktok-vertical">
+                                    <div class="lazy-iframe" data-src="https://www.tiktok.com/embed/v2/7031234567890123450"></div>
+                                </div>
+                            </div>
+                            <div class="card-content">
+                                <h3>Social Media Reel</h3>
+                                <p>Vertical video editing optimized for TikTok and Instagram Reels with engaging motion graphics and trending audio.</p>
+                                <div style="display:flex;gap:8px;margin-top:8px">
+                                    <button class="menu-item" onclick="openProject('https://www.tiktok.com/@real1editor')">View Reel</button>
+                                    <button class="menu-item" onclick="openLink('https://linktr.ee/real1editor')">More Info</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- YouTube Section -->
+        <section id="yt" class="section">
+            <div class="container">
+                <div class="holo-card">
+                    <div class="section-header">
+                        <h2>YouTube — Holo Broadcast Station</h2>
+                        <div class="holo-divider"></div>
+                    </div>
+
+                    <div style="display:grid;gap:14px;">
+                        <div class="video-portal reveal">
+                            <div class="lazy-iframe" data-src="https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=0&mute=1&loop=0&controls=1&modestbranding=1"></div>
+                        </div>
+                        <div class="video-portal reveal">
+                            <div class="lazy-iframe" data-src="https://www.youtube.com/embed/3JZ_D3ELwOQ?autoplay=0&mute=1&loop=0&controls=1&modestbranding=1"></div>
+                        </div>
+                    </div>
+                    <div style="text-align:center;margin-top:30px;">
+                        <button class="menu-item" onclick="openLink('https://www.youtube.com/@real1editor')">
+                            🎬 Subscribe on YouTube
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TikTok Section -->
+        <section id="tt" class="section">
+            <div class="container">
+                <div class="holo-card">
+                    <div class="section-header">
+                        <h2>TikTok — Quantum Stream Chamber</h2>
+                        <div class="holo-divider"></div>
+                    </div>
+
+                    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:25px;justify-items:center;">
+                        <div class="tiktok-vertical reveal">
+                            <div class="lazy-iframe" data-src="https://www.tiktok.com/embed/v2/7031234567890123450"></div>
+                        </div>
+                        
+                        <div class="tiktok-vertical reveal">
+                            <div class="lazy-iframe" data-src="https://www.tiktok.com/embed/v2/7041234567890123451"></div>
+                        </div>
+                    </div>
+                    
+                    <div style="text-align:center;margin-top:30px;">
+                        <button class="menu-item" onclick="openLink('https://www.tiktok.com/@real1editor')">
+                            🎬 Follow on TikTok
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Pricing Section -->
+        <section id="pricing" class="section">
+            <div class="container">
+                <div class="holo-card" role="region" aria-labelledby="pricingTitle">
+                    <div class="calculator-header">
+                        <h1>🎬 Video Pricing Calculator</h1>
+                        <p>Get an instant quote for your video project. Adjust the sliders to see real-time pricing updates.</p>
+                    </div>
+
+                    <div class="calculator-grid">
+                        <div class="calculator-input">
+                            <label for="videoType">📽️ Video Type</label>
+                            <select id="videoType" onchange="calculatePrice()">
+                                <option value="corporate">Corporate Video</option>
+                                <option value="commercial">Commercial Ad</option>
+                                <option value="documentary">Documentary</option>
+                                <option value="social">Social Media Content</option>
+                                <option value="music">Music Video</option>
+                                <option value="animation">Animation</option>
+                            </select>
+                        </div>
+
+                        <div class="calculator-input">
+                            <label for="complexity">⚙️ Complexity Level</label>
+                            <select id="complexity" onchange="calculatePrice()">
+                                <option value="basic">Basic Editing</option>
+                                <option value="standard" selected>Standard (Color + Audio)</option>
+                                <option value="premium">Premium (VFX + Motion)</option>
+                                <option value="cinematic">Cinematic (Full Package)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="calculator-input">
+                        <label for="videoLength">⏱️ Video Length</label>
+                        <div class="slider-container">
+                            <div class="slider-header">
+                                <span class="slider-label">Adjust video duration</span>
+                                <span class="slider-value" id="lengthValue">5 minutes</span>
+                            </div>
+                            <input type="range" id="videoLength" class="range-slider" min="1" max="60" value="5" oninput="updateLengthDisplay(); calculatePrice()">
+                            <div class="slider-labels">
+                                <span class="slider-label">1 min</span>
+                                <span class="slider-label">30 mins</span>
+                                <span class="slider-label">60 mins</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="calculator-input">
+                        <label for="turnaround">🚀 Turnaround Time</label>
+                        <select id="turnaround" onchange="calculatePrice()">
+                            <option value="14">14 days (Standard)</option>
+                            <option value="7" selected>7 days (+15%)</option>
+                            <option value="3">3 days (+35%)</option>
+                            <option value="1">24 hours (+60%)</option>
+                        </select>
+                    </div>
+
+                    <div class="price-display" id="priceDisplay">
+                        <div class="price-label">ESTIMATED TOTAL</div>
+                        <div class="price-amount">$<span id="calculatedPrice">85</span></div>
+                        <div class="price-note">Includes 2 rounds of revisions • All formats included</div>
+                    </div>
+
+                    <div class="price-breakdown">
+                        <div class="breakdown-header" onclick="toggleBreakdown()">
+                            <h3>📊 Price Breakdown</h3>
+                            <button class="breakdown-toggle">▼</button>
+                        </div>
+                        <div class="breakdown-content">
+                            <div class="breakdown-item">
+                                <span class="breakdown-label">Base Rate:</span>
+                                <span class="breakdown-value" id="baseRate">$80</span>
+                            </div>
+                            <div class="breakdown-item">
+                                <span class="breakdown-label">Length Adjustment:</span>
+                                <span class="breakdown-value" id="lengthAdjustment">+$0</span>
+                            </div>
+                            <div class="breakdown-item">
+                                <span class="breakdown-label">Complexity:</span>
+                                <span class="breakdown-value" id="complexityMultiplier">×1.3</span>
+                            </div>
+                            <div class="breakdown-item">
+                                <span class="breakdown-label">Rush Fee:</span>
+                                <span class="breakdown-value" id="rushFee">+$0</span>
+                            </div>
+                            <div class="breakdown-total">
+                                <span class="breakdown-label">Total:</span>
+                                <span class="breakdown-value" id="totalPrice">$80</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="action-buttons">
+                        <button class="action-button primary" onclick="bookConsultation()">
+                            📅 Book Free Consultation
+                        </button>
+                        <button class="action-button secondary" onclick="getCustomQuote()">
+                            💬 Get Custom Quote
+                        </button>
+                        <button class="action-button reset" onclick="resetCalculator()">
+                            🔄 Reset Calculator
+                        </button>
+                    </div>
+
+                    <div class="calculator-footer">
+                        <p>💡 <strong>Pro Tip:</strong> Book a consultation for personalized service recommendations, custom package deals, and detailed project planning.</p>
+                        <p style="margin-top: 10px; font-size: 0.8rem;">All prices are estimates. Final quote may vary based on project requirements.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Testimonials Section -->
+        <section id="testimonials" class="section">
+            <div class="container">
+                <div class="holo-card" role="region" aria-labelledby="testimonialsTitle">
+                    <div class="section-header">
+                        <h2 id="testimonialsTitle">Client Testimonials</h2>
+                        <div class="holo-divider"></div>
+                    </div>
+                    <div class="testimonials-grid reveal">
+                        <div class="testimonial-card">
+                            <div class="testimonial-text">
+                                "The editing completely transformed our raw footage into a compelling narrative that exceeded our expectations. The attention to detail and creative input elevated our documentary to new dimensions."
+                            </div>
+                            <div class="testimonial-author">
+                                <div class="author-avatar">SJ</div>
+                                <div class="author-info">
+                                    <h4>Sarah Johnson</h4>
+                                    <p>Marketing Director, TechVision</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="testimonial-card">
+                            <div class="testimonial-text">
+                                "Working with Real1Editor was seamless. The quantum-speed turnaround without compromising quality made our social media campaign a massive success with record engagement rates."
+                            </div>
+                            <div class="testimonial-author">
+                                <div class="author-avatar">MC</div>
+                                <div class="author-info">
+                                    <h4>Michael Chen</h4>
+                                    <p>Creative Director, Horizon Films</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="testimonial-card">
+                            <div class="testimonial-text">
+                                "The color grading and motion graphics added a professional touch that made our product videos stand out. The dedication to perfection and continuous communication was impressive."
+                            </div>
+                            <div class="testimonial-author">
+                                <div class="author-avatar">JW</div>
+                                <div class="author-info">
+                                    <h4>Jessica Williams</h4>
+                                    <p>Brand Manager, StyleCo</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+
+        <!-- Contact Section -->
+        <section id="contact" class="section">
+            <div class="container">
+                <div class="holo-card">
+                    <div class="section-header">
+                        <h2>Quantum Transmission Hub</h2>
+                        <div class="holo-divider"></div>
+                    </div>
+
+                    <div class="contact-interface reveal">
+                        <div class="transmission-pad" id="contactPad">
+                            <h3>Project Transmission</h3>
+                            <div class="input-holo">
+                                <label for="cname">Name *</label>
+                                <div class="holo-input"><input id="cname" name="name" placeholder="Your name" required></div>
+                            </div>
+                            <div class="input-holo">
+                                <label for="cemail">Email *</label>
+                                <div class="holo-input"><input id="cemail" type="email" name="email" placeholder="you@domain.com" required></div>
+                            </div>
+                            <div class="input-holo">
+                                <label for="cproject">Project Idea *</label>
+                                <div class="holo-input"><textarea id="cproject" name="project" placeholder="Brief project description" required></textarea></div>
+                            </div>
+                            <button class="transmit-btn" onclick="transmit('project', this)">Transmit</button>
+                        </div>
+
+                        <div class="feedback-pad" id="feedbackPad">
+                            <h3>Feedback & Suggestions</h3>
+                            <div class="input-holo">
+                                <label for="f_name">Name (optional)</label>
+                                <div class="holo-input"><input id="f_name" name="fname" placeholder="Your name"></div>
+                            </div>
+                            <div class="input-holo">
+                                <label for="f_msg">Message *</label>
+                                <div class="holo-input"><textarea id="f_msg" name="message" placeholder="Your feedback" required></textarea></div>
+                            </div>
+                            <button class="transmit-btn secondary" onclick="transmit('feedback', this)">Send Feedback</button>
+                        </div>
+                    </div>
+                
+                    <div style="margin-top:18px" class="reveal">
+                        <div class="newsletter-holo" id="newsletterForm"> <br>
+                        <h3>Quantum Edit Newsletter</h3>
+                            <p>Join for <b>free</b> — cinematic updates & pro editing insights.</p> 
+                            <div class="newsletter-form" style="justify-content:center">
+                                <div class="holo-input"><input id="n_email" type="email" placeholder="you@domain.com" required></div>
+                                <div><button class="transmit-btn" onclick="transmit('subscribe', this)">Subscribe</button> </div>
+                            </div>
+                            </div>
+                            <div style="margin-top:29px" class="reveal">
+                        <div class="newsletter-holo">
+                            <div class="newsletter-form" style="justify-content:center">
+                            </div>
+                            <h3>Connect & Collaborate</h3>
+                            <div style="margin-top:7px">
+                                <button class="menu-item" onclick="openLink('https://linktr.ee/real1editor')">🔗 Collab Portal 🔗</button>
+                                
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+        
+        <!-- Contact Info Section -->
+        <section id="contact-info" class="section">
+            <div class="container">
+                <div class="holo-card" role="region" aria-labelledby="contactInfoTitle">
+                    <div class="section-header">
+                        <h2 id="contactInfoTitle">Contact Information</h2>
+                        <div class="holo-divider"></div>
+                    </div>
+                    
+                    <div class="contact-info-grid reveal" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 25px; margin-top: 30px;">
+                        
+                        <div class="contact-method" style="text-align: center; padding: 25px; background: var(--glass); border-radius: var(--card-radius); border: 1px solid var(--glass-border); transition: all 0.3s ease;">
+                            <div class="contact-icon" style="font-size: 2.5rem; margin-bottom: 15px; color: var(--primary-holo);">📱</div>
+                            <h3 style="font-family: 'Orbitron', monospace; color: var(--primary-holo); margin-bottom: 10px;">Phone</h3>
+                            <p style="color: rgba(255,255,255,0.8); margin-bottom: 15px;">Direct communication for urgent projects</p>
+                            <a href="tel:+251777126584" class="contact-link" style="color: var(--primary-holo); text-decoration: none; font-family: 'Orbitron', monospace; font-weight: bold; border: 1px solid var(--primary-holo); padding: 10px 20px; border-radius: 25px; transition: all 0.3s ease; display: inline-block;">
+                                +251 777126584
+                            </a>
+                        </div>
+                        
+                        <div class="contact-method" style="text-align: center; padding: 25px; background: var(--glass); border-radius: var(--card-radius); border: 1px solid var(--glass-border); transition: all 0.3s ease;">
+                            <div class="contact-icon" style="font-size: 2.5rem; margin-bottom: 15px; color: var(--primary-holo);">✉️</div>
+                            <h3 style="font-family: 'Orbitron', monospace; color: var(--primary-holo); margin-bottom: 10px;">Email</h3>
+                            <p style="color: rgba(255,255,255,0.8); margin-bottom: 15px;">For detailed project discussions</p>
+                            <a href="mailto:real1editor@gmail.com" class="contact-link" style="color: var(--primary-holo); text-decoration: none; font-family: 'Orbitron', monospace; font-weight: bold; border: 1px solid var(--primary-holo); padding: 10px 20px; border-radius: 25px; transition: all 0.3s ease; display: inline-block;">
+                                real1editor@gmail.com
+                            </a>
+                        </div>
+                        
+                        <div class="contact-method" style="text-align: center; padding: 25px; background: var(--glass); border-radius: var(--card-radius); border: 1px solid var(--glass-border); transition: all 0.3s ease;">
+                            <div class="contact-icon" style="font-size: 2.5rem; margin-bottom: 15px; color: var(--primary-holo);">💬</div>
+                            <h3 style="font-family: 'Orbitron', monospace; color: var(--primary-holo); margin-bottom: 10px;">Telegram DM</h3>
+                            <p style="color: rgba(255,255,255,0.8); margin-bottom: 15px;">Quick messages & file sharing</p>
+                            <a href="https://t.me/Real1editor" target="_blank" class="contact-link" style="color: var(--primary-holo); text-decoration: none; font-family: 'Orbitron', monospace; font-weight: bold; border: 1px solid var(--primary-holo); padding: 10px 20px; border-radius: 25px; transition: all 0.3s ease; display: inline-block;">
+                                @Real1editor
+                            </a>
+                        </div>
+                        
+                        <div class="contact-method" style="text-align: center; padding: 25px; background: var(--glass); border-radius: var(--card-radius); border: 1px solid var(--glass-border); transition: all 0.3s ease;">
+                            <div class="contact-icon" style="font-size: 2.5rem; margin-bottom: 15px; color: var(--primary-holo);">📍</div>
+                            <h3 style="font-family: 'Orbitron', monospace; color: var(--primary-holo); margin-bottom: 10px;">Location</h3>
+                            <p style="color: rgba(255,255,255,0.8); margin-bottom: 15px;">Based in Digital Space</p>
+                            <div class="contact-link" style="color: var(--primary-holo); font-family: 'Orbitron', monospace; font-weight: bold; border: 1px solid var(--primary-holo); padding: 10px 20px; border-radius: 25px; transition: all 0.3s ease; display: inline-block;">
+                                Global • Remote
+                            </div>
+                        </div>
+                        
+                    </div>
+                    
+                    <div style="text-align: center; margin-top: 30px;">
+                        <p style="color: var(--muted); font-size: 0.9rem;">
+                            Available for international collaborations • Timezone: UTC±3 • Response time: 2-6 hours
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <section class="section">
+            <div class="container">
+                <div class="holo-card" style="text-align:center">
+                    <p style="color:var(--muted)"> © 2025 Real1Editor. All rights reserved.</p>
+                </div>
+            </div>
+        </section>
+        
+    </main>
+
+    <!-- NON-CRITICAL CSS (Loaded after content) -->
+    <style id="non-critical-css">
+        /* ========================
+           NON-CRITICAL STYLES
+           Loaded after initial render
+           ======================== */
+        .container { width:100%; max-width:1200px; margin:0 auto; padding:0 18px; }
+        
+        /* Section styling */
+        section { 
+            min-height:100vh; 
+            display:flex; 
+            align-items:center; 
+            justify-content:center; 
+            padding:70px 20px;
+            position: relative;
+        }
+
+        /* Holo card */
+        .holo-card { 
+            background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); 
+            border-radius:var(--card-radius); 
+            padding:24px; 
+            border:1px solid var(--glass-border); 
+            backdrop-filter: blur(10px); 
+            box-shadow: 0 18px 50px rgba(0,0,0,0.6); 
+            transition: transform .4s ease, box-shadow .3s ease; 
+        }
+        .holo-card:hover { transform:translateY(-6px); box-shadow:0 26px 80px rgba(0,0,0,0.7); }
+
+        /* Section headers */
+        .section-header { text-align:center; margin-bottom:18px; }
+        .section-header h2 { 
+            font-family:'Orbitron', monospace; 
+            font-size:2.2rem; 
+            color:var(--primary-holo); 
+            text-shadow: 0 0 18px var(--text-glow); 
+            margin-bottom:8px 
+        }
+        .holo-divider { 
+            width:110px; 
+            height:3px; 
+            background: linear-gradient(90deg, transparent, var(--primary-holo), transparent); 
+            margin:0 auto 18px 
+        }
+
+        /* Intro section */
+        #intro-section {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            z-index: 9998;
+            background: var(--deep-space);
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.4s ease, visibility 0.4s;
+        }
+
+        #intro-section.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .holographic-display {
+            position: relative;
+            height: 100vh;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+        .holo-grid {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(rgba(0, 243, 255, 0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 243, 255, 0.1) 1px, transparent 1px);
+            background-size: 50px 50px;
+            opacity: 0.3;
+        }
+
+        .main-title h1 {
+            font-family: 'Orbitron', monospace;
+            font-size: clamp(2.5rem, 8vw, 4rem);
+            font-weight: 900;
+            margin-bottom: 20px;
+            position: relative;
+            text-shadow: 0 0 30px var(--primary-holo);
+        }
+
+        .glitch-text {
+            position: relative;
+            color: var(--primary-holo);
+        }
+
+        .glitch-text::before,
+        .glitch-text::after {
+            content: attr(data-text);
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        .glitch-text::before {
+            animation: glitch-1 0.5s infinite linear alternate-reverse;
+            color: var(--accent-neon);
+            z-index: -1;
+        }
+
+        .glitch-text::after {
+            animation: glitch-2 0.5s infinite linear alternate-reverse;
+            color: var(--secondary-holo);
+            z-index: -2;
+        }
+
+        @keyframes glitch-1 { 
+            0%{transform:translate(0)} 
+            20%{transform:translate(-2px,2px)} 
+            40%{transform:translate(-2px,-2px)} 
+            60%{transform:translate(2px,2px)} 
+            80%{transform:translate(2px,-2px)} 
+            100%{transform:translate(0)} 
+        }
+        @keyframes glitch-2 { 
+            0%{transform:translate(0)} 
+            20%{transform:translate(2px,2px)} 
+            40%{transform:translate(2px,-2px)} 
+            60%{transform:translate(-2px,2px)} 
+            80%{transform:translate(-2px,-2px)} 
+            100%{transform:translate(0)} 
+        }
+
+        .title-sub {
+            font-family: 'Orbitron', monospace;
+            font-size: clamp(0.9rem, 3vw, 1.2rem);
+            letter-spacing: 3px;
+            color: var(--secondary-holo);
+            margin-bottom: 40px;
+        }
+
+        .ai-orb {
+            position: relative;
+            width: clamp(150px, 40vw, 200px);
+            height: clamp(150px, 40vw, 200px);
+            margin: 40px auto;
+        }
+
+        .orb-ring {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            border: 2px solid transparent;
+            border-top: 2px solid var(--primary-holo);
+            border-right: 2px solid var(--secondary-holo);
+            animation: rotate 2s linear infinite;
+        }
+
+        .orb-glow {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            right: 20px;
+            bottom: 20px;
+            border-radius: 50%;
+            background: radial-gradient(circle, var(--primary-holo) 0%, transparent 70%);
+            opacity: 0.3;
+            animation: pulse 1.5s infinite alternate;
+        }
+
+        .welcome-message p {
+            font-size: clamp(1rem, 3vw, 1.2rem);
+            margin-bottom: 30px;
+            color: rgba(255, 255, 255, 0.8);
+            max-width: 600px;
+            line-height: 1.6;
+            padding: 0 20px;
+        }
+
+        .pulse-cta {
+            position: relative;
+            cursor: pointer;
+        }
+
+        .cta-orb {
+            padding: 15px 30px;
+            background: var(--glass);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            border-radius: 30px;
+            font-family: 'Orbitron', monospace;
+            letter-spacing: 2px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+            color: var(--primary-holo);
+            font-weight: bold;
+        }
+
+        .cta-orb::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .cta-orb:hover::before {
+            left: 100%;
+        }
+
+        .cta-orb:hover {
+            border-color: var(--primary-holo);
+            box-shadow: 0 0 20px rgba(0, 243, 255, 0.5);
+            transform: translateY(-3px);
+        }
+
+        /* Menu */
+        .beautiful-menu {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-100px);
+            z-index: 1000;
+            background: linear-gradient(135deg, rgba(10, 14, 23, 0.95), rgba(26, 31, 53, 0.95));
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 50px;
+            padding: 12px 24px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5), 
+                        0 0 30px rgba(0, 243, 255, 0.1),
+                        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+
+        .beautiful-menu.visible {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+            visibility: visible;
+            pointer-events: auto;
+        }
+
+        .menu-content {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .menu-item {
+            padding: 10px 20px;
+            background: transparent;
+            border: none;
+            border-radius: 30px;
+            color: var(--primary-holo);
+            font-family: 'Orbitron', monospace;
+            font-size: 0.85rem;
+            font-weight: 600;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .menu-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0, 243, 255, 0.1), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .menu-item:hover::before {
+            left: 100%;
+        }
+
+        .menu-item:hover {
+            background: rgba(0, 243, 255, 0.1);
+            color: #fff;
+            text-shadow: 0 0 10px var(--primary-holo);
+            transform: translateY(-2px);
+        }
+
+        .menu-item.active {
+            background: linear-gradient(135deg, var(--primary-holo), var(--secondary-holo));
+            color: var(--deep-space);
+            box-shadow: 0 5px 15px rgba(0, 243, 255, 0.3);
+        }
+
+        .menu-glow {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            border-radius: 50px;
+            background: conic-gradient(from 0deg, var(--primary-holo), var(--secondary-holo), var(--accent-neon), var(--primary-holo));
+            opacity: 0.3;
+            filter: blur(15px);
+            z-index: -1;
+            animation: rotate 8s linear infinite;
+        }
+
+        .menu-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1001;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-holo), var(--secondary-holo));
+            border: none;
+            color: var(--deep-space);
+            font-size: 1.2rem;
+            cursor: pointer;
+            box-shadow: 0 10px 30px rgba(0, 243, 255, 0.3);
+            transition: all 0.3s ease;
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .menu-toggle.visible {
+            display: flex;
+        }
+
+        .menu-toggle:hover {
+            transform: scale(1.1);
+            box-shadow: 0 15px 40px rgba(0, 243, 255, 0.4);
+        }
+
+        @media (max-width: 768px) {
+            .beautiful-menu {
+                width: 90%;
+                border-radius: 25px;
+                padding: 15px;
+            }
+            
+            .menu-content {
+                flex-direction: column;
+                gap: 5px;
+            }
+            
+            .menu-item {
+                width: 100%;
+                text-align: center;
+                padding: 12px 20px;
+            }
+        }
+
+        /* Back to Top */
+        .back-to-top-btn {
+            position: fixed;
+            bottom: 100px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-holo), var(--secondary-holo));
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            color: var(--deep-space);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 9999;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(20px);
+            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            box-shadow: 0 8px 30px rgba(0, 243, 255, 0.3);
+            font-family: 'Orbitron', monospace;
+            font-weight: bold;
+            font-size: 0.7rem;
+        }
+
+        .back-to-top-btn.visible {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .back-to-top-btn:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 15px 40px rgba(0, 243, 255, 0.5);
+            border-color: var(--primary-holo);
+        }
+
+        .top-arrow {
+            font-size: 1.2rem;
+            margin-bottom: 2px;
+        }
+
+        .top-text {
+            font-size: 0.6rem;
+            letter-spacing: 1px;
+        }
+
+        @media (max-width: 768px) {
+            .back-to-top-btn {
+                bottom: 90px;
+                right: 20px;
+                width: 55px;
+                height: 55px;
+            }
+        }
+
+        /* Chatbot */
+        .chatbot-container {
+            position: fixed;
+            bottom: 24px;
+            left: 24px;
+            z-index: 10000;
+        }
+
+        .chat-bubble {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            box-shadow: 0 8px 32px rgba(0, 243, 255, 0.15);
+        }
+
+        .chat-bubble:hover {
+            transform: scale(1.1);
+            border-color: var(--primary-holo);
+            box-shadow: 0 12px 40px rgba(0, 243, 255, 0.25);
+        }
+
+        .chat-icon {
+            font-size: 1.5rem;
+            filter: drop-shadow(0 0 10px var(--primary-holo));
+        }
+
+        .chat-pulse {
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            border-radius: 50%;
+            border: 2px solid var(--primary-holo);
+            animation: chatPulse 2s infinite;
+            opacity: 0;
+        }
+
+        @keyframes chatPulse {
+            0% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(1.2);
+                opacity: 0;
+            }
+        }
+
+        .chat-panel {
+            position: absolute;
+            bottom: 80px;
+            left: 0;
+            width: 350px;
+            height: 500px;
+            background: linear-gradient(135deg, rgba(10, 14, 23, 0.95), rgba(26, 31, 53, 0.95));
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--card-radius);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .chat-panel.active {
+            display: flex;
+            animation: chatSlideUp 0.3s ease;
+        }
+
+        @keyframes chatSlideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .chat-header {
+            padding: 20px;
+            background: rgba(0, 243, 255, 0.05);
+            border-bottom: 1px solid var(--glass-border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .chat-header h3 {
+            font-family: 'Orbitron', monospace;
+            color: var(--primary-holo);
+            margin: 0;
+            font-size: 1.1rem;
+        }
+
+        .close-chat {
+            background: none;
+            border: none;
+            color: var(--primary-holo);
+            font-size: 1.5rem;
+            cursor: pointer;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .close-chat:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .message {
+            display: flex;
+            max-width: 80%;
+        }
+
+        .user-message {
+            align-self: flex-end;
+        }
+
+        .bot-message {
+            align-self: flex-start;
+        }
+
+        .message-content {
+            padding: 12px 16px;
+            border-radius: 18px;
+            font-size: 0.9rem;
+            line-height: 1.4;
+            word-wrap: break-word;
+        }
+
+        .user-message .message-content {
+            background: linear-gradient(135deg, var(--primary-holo), var(--secondary-holo));
+            color: var(--deep-space);
+            border-bottom-right-radius: 4px;
+        }
+
+        .bot-message .message-content {
+            background: rgba(255, 255, 255, 0.08);
+            color: rgba(255, 255, 255, 0.9);
+            border: 1px solid var(--glass-border);
+            border-bottom-left-radius: 4px;
+        }
+
+        .chat-input-container {
+            padding: 20px;
+            border-top: 1px solid var(--glass-border);
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        #chatInput {
+            flex: 1;
+            padding: 12px 16px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border);
+            border-radius: 25px;
+            color: var(--primary-holo);
+            font-family: 'Exo 2', sans-serif;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        #chatInput:focus {
+            outline: none;
+            border-color: var(--primary-holo);
+            box-shadow: 0 0 20px rgba(0, 243, 255, 0.2);
+        }
+
+        #chatInput::placeholder {
+            color: rgba(0, 243, 255, 0.5);
+        }
+
+        .send-button {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-holo), var(--secondary-holo));
+            border: none;
+            color: var(--deep-space);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            font-size: 1.1rem;
+        }
+
+        .send-button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 8px 25px rgba(0, 243, 255, 0.3);
+        }
+
+        .chat-footer {
+            padding: 10px 20px;
+            background: rgba(0, 0, 0, 0.3);
+            text-align: center;
+            border-top: 1px solid var(--glass-border);
+        }
+
+        .chat-footer small {
+            color: var(--muted);
+            font-size: 0.75rem;
+        }
+
+        .typing-indicator {
+            display: inline-flex;
+            gap: 4px;
+            padding: 12px 16px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 18px;
+            border-bottom-left-radius: 4px;
+        }
+
+        .typing-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--primary-holo);
+            animation: typingBounce 1.4s infinite ease-in-out;
+        }
+
+        .typing-dot:nth-child(1) { animation-delay: -0.32s; }
+        .typing-dot:nth-child(2) { animation-delay: -0.16s; }
+
+        @keyframes typingBounce {
+            0%, 80%, 100% {
+                transform: scale(0.8);
+                opacity: 0.5;
+            }
+            40% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .chatbot-container {
+                bottom: 20px;
+                left: 20px;
+            }
+            
+            .chat-panel {
+                width: calc(100vw - 40px);
+                height: 60vh;
+                left: 0;
+                right: 0;
+                margin: 0 auto;
+            }
+            
+            .message {
+                max-width: 90%;
+            }
+        }
+
+        /* Pricing calculator */
+        .calculator-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .calculator-header h1 {
+            font-family: 'Orbitron', monospace;
+            color: var(--primary-holo);
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 0 0 20px var(--primary-holo);
+        }
+
+        .calculator-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        @media (max-width: 768px) {
+            .calculator-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .calculator-input {
+            margin-bottom: 25px;
+        }
+
+        .calculator-input label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 12px;
+            font-family: 'Orbitron', monospace;
+            color: var(--primary-holo);
+            font-weight: 600;
+            font-size: 1rem;
+            letter-spacing: 1px;
+        }
+
+        .calculator-input select {
+            width: 100%;
+            padding: 16px 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border);
+            border-radius: 10px;
+            color: var(--primary-holo);
+            font-family: 'Exo 2', sans-serif;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2300f3ff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 20px center;
+            background-size: 16px;
+        }
+
+        .calculator-input select:focus {
+            outline: none;
+            border-color: var(--primary-holo);
+            box-shadow: 0 0 25px rgba(0, 243, 255, 0.3);
+        }
+
+        .slider-container {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--glass-border);
+            border-radius: 10px;
+            padding: 25px;
+            margin-top: 10px;
+        }
+
+        .slider-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .slider-header .slider-value {
+            font-family: 'Orbitron', monospace;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary-holo);
+            background: rgba(0, 243, 255, 0.1);
+            padding: 8px 20px;
+            border-radius: 25px;
+            border: 1px solid rgba(0, 243, 255, 0.3);
+        }
+
+        .range-slider {
+            width: 100%;
+            height: 6px;
+            -webkit-appearance: none;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+            outline: none;
+            margin: 20px 0;
+        }
+
+        .range-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: var(--primary-holo);
+            cursor: pointer;
+            box-shadow: 0 0 20px rgba(0, 243, 255, 0.8);
+            border: 3px solid var(--deep-space);
+            transition: all 0.3s ease;
+        }
+
+        .range-slider::-webkit-slider-thumb:hover {
+            background: #fff;
+            box-shadow: 0 0 30px rgba(0, 243, 255, 1);
+            transform: scale(1.1);
+        }
+
+        .slider-labels {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 15px;
+            padding: 0 5px;
+        }
+
+        .slider-label {
+            font-size: 0.85rem;
+            color: var(--muted);
+            font-family: 'Orbitron', monospace;
+        }
+
+        .price-display {
+            text-align: center;
+            margin: 40px 0;
+            padding: 30px;
+            background: linear-gradient(135deg, 
+                rgba(0, 243, 255, 0.1), 
+                rgba(185, 103, 255, 0.1));
+            border-radius: var(--card-radius);
+            border: 1px solid rgba(0, 243, 255, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .price-display::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, 
+                transparent 0%, 
+                rgba(0, 243, 255, 0.1) 50%, 
+                transparent 100%);
+            animation: priceGlow 3s infinite;
+        }
+
+        @keyframes priceGlow {
+            0%, 100% { transform: translateX(-100%); }
+            50% { transform: translateX(100%); }
+        }
+
+        .price-label {
+            font-family: 'Orbitron', monospace;
+            color: var(--primary-holo);
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            letter-spacing: 2px;
+        }
+
+        .price-amount {
+            font-family: 'Orbitron', monospace;
+            font-size: 4rem;
+            font-weight: 800;
+            color: var(--primary-holo);
+            text-shadow: 0 0 30px rgba(0, 243, 255, 0.5);
+            line-height: 1;
+        }
+
+        .price-note {
+            font-size: 0.9rem;
+            color: var(--muted);
+            margin-top: 15px;
+            font-style: italic;
+        }
+
+        .price-breakdown {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: var(--card-radius);
+            border: 1px solid var(--glass-border);
+            overflow: hidden;
+            margin-top: 30px;
+        }
+
+        .breakdown-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            background: rgba(0, 243, 255, 0.05);
+            border-bottom: 1px solid var(--glass-border);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .breakdown-header:hover {
+            background: rgba(0, 243, 255, 0.1);
+        }
+
+        .breakdown-header h3 {
+            font-family: 'Orbitron', monospace;
+            color: var(--primary-holo);
+            margin: 0;
+            font-size: 1.1rem;
+        }
+
+        .breakdown-toggle {
+            background: none;
+            border: none;
+            color: var(--primary-holo);
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .breakdown-toggle:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .breakdown-content {
+            padding: 25px;
+            display: none;
+        }
+
+        .breakdown-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .breakdown-item:last-child {
+            border-bottom: none;
+        }
+
+        .breakdown-label {
+            color: var(--muted);
+            font-family: 'Exo 2', sans-serif;
+            font-size: 0.95rem;
+        }
+
+        .breakdown-value {
+            font-family: 'Orbitron', monospace;
+            color: var(--primary-holo);
+            font-weight: bold;
+            font-size: 1rem;
+        }
+
+        .breakdown-total {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0 0;
+            margin-top: 20px;
+            border-top: 2px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .breakdown-total .breakdown-label {
+            font-size: 1.1rem;
+            color: #fff;
+            font-weight: 600;
+        }
+
+        .breakdown-total .breakdown-value {
+            font-size: 1.3rem;
+            color: var(--primary-holo);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 40px;
+            flex-wrap: wrap;
+        }
+
+        .action-button {
+            padding: 16px 32px;
+            border: none;
+            border-radius: 50px;
+            font-family: 'Orbitron', monospace;
+            font-weight: 600;
+            font-size: 0.95rem;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+        }
+
+        .action-button.primary {
+            background: linear-gradient(135deg, var(--primary-holo), var(--secondary-holo));
+            color: var(--deep-space);
+            box-shadow: 0 10px 30px rgba(0, 243, 255, 0.3);
+        }
+
+        .action-button.primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(0, 243, 255, 0.4);
+        }
+
+        .action-button.secondary {
+            background: transparent;
+            color: var(--primary-holo);
+            border: 1px solid var(--primary-holo);
+        }
+
+        .action-button.secondary:hover {
+            background: rgba(0, 243, 255, 0.1);
+            transform: translateY(-3px);
+        }
+
+        .action-button.reset {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--muted);
+            border: 1px solid var(--glass-border);
+        }
+
+        .action-button.reset:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+        }
+
+        .calculator-footer {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid var(--glass-border);
+        }
+
+        .calculator-footer p {
+            color: var(--muted);
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        .calculator-footer strong {
+            color: var(--primary-holo);
+        }
+
+        @keyframes pricePulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .price-updated {
+            animation: pricePulse 0.5s ease;
+        }
+
+        @media (max-width: 768px) {
+            .price-amount {
+                font-size: 3rem;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+            
+            .action-button {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+
+        /* Video elements */
+        .tiktok-vertical {
+            width: 100%;
+            aspect-ratio: 9/16;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.03);
+            background: #000;
+            max-width: 320px;
+            margin: 0 auto;
+        }
+
+        .video-portal {
+            width:100%; 
+            aspect-ratio:16/9; 
+            border-radius:12px; 
+            overflow:hidden; 
+            border:1px solid rgba(255,255,255,0.03); 
+            background:#000;
+        }
+
+        .lazy-iframe {
+            width: 100%;
+            height: 100%;
+            background: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary-holo);
+            font-family: 'Orbitron', monospace;
+            cursor: pointer;
+        }
+
+        .lazy-iframe::before {
+            content: '▶ Load Video';
+            background: rgba(0, 243, 255, 0.1);
+            padding: 10px 20px;
+            border-radius: 25px;
+            border: 1px solid var(--primary-holo);
+        }
+
+        .lazy-iframe.loaded::before {
+            display: none;
+        }
+
+        /* About/Skills */
+        .about-grid { 
+            display:grid; 
+            grid-template-columns: 1fr 1fr; 
+            gap:28px; 
+            align-items:center; 
+        }
+        
+        @media(max-width:880px){ 
+            .about-grid { 
+                grid-template-columns:1fr; 
+            } 
+        }
+
+        .avatar-frame { 
+            width:220px; 
+            height:220px; 
+            border-radius:50%; 
+            background:var(--glass); 
+            border:1px solid var(--glass-border); 
+            margin:0 auto; 
+            position:relative; 
+            overflow:hidden; 
+        }
+        
+        .avatar-glitch { 
+            width:100%; 
+            height:100%; 
+            background:conic-gradient(from 0deg, var(--primary-holo), var(--secondary-holo), var(--accent-neon), var(--primary-holo)); 
+            opacity:0.2; 
+            animation:rotate 8s linear infinite 
+        }
+
+        .skills-container { 
+            display:flex; 
+            flex-direction:column; 
+            align-items:center; 
+            width:100% 
+        }
+        
+        .skills-orb { 
+            position:relative; 
+            width:380px; 
+            height:380px; 
+            margin:0 auto 18px; 
+        }
+        
+        .skill-node { 
+            position:absolute; 
+            width:84px; 
+            height:84px; 
+            border-radius:50%; 
+            background:var(--glass); 
+            border:1px solid var(--glass-border); 
+            display:flex; 
+            justify-content:center; 
+            align-items:center; 
+            cursor:pointer; 
+            transition:all .3s; 
+        }
+        
+        .skill-node .node-core { 
+            width:20px; 
+            height:20px; 
+            border-radius:50%; 
+            background:var(--primary-holo); 
+            box-shadow:0 0 10px var(--primary-holo); 
+        }
+        
+        .skill-node .skill-name { 
+            position:absolute; 
+            bottom:-32px; 
+            font-size:.8rem; 
+            white-space:nowrap; 
+            opacity:0; 
+            transition:opacity .25s; 
+            font-family:'Orbitron', monospace; 
+        }
+        
+        .skill-node:hover, .skill-node.active { 
+            border-color:var(--primary-holo); 
+            box-shadow:0 0 22px rgba(0,243,255,0.4); 
+            transform:scale(1.05) 
+        }
+        
+        .skill-node:hover .skill-name, .skill-node.active .skill-name { 
+            opacity:1 
+        }
+
+        .skill-node:nth-child(1){ top:50%; left:0; transform:translate(-10%, -50%); }
+        .skill-node:nth-child(2){ top:10%; left:18%; transform:translate(0,0); }
+        .skill-node:nth-child(3){ top:10%; right:18%; transform:translate(0,0); }
+        .skill-node:nth-child(4){ bottom:10%; left:18%; transform:translate(0,0); }
+        .skill-node:nth-child(5){ bottom:10%; right:18%; transform:translate(0,0); }
+        .skill-node:nth-child(6){ top:50%; right:0; transform:translate(10%, -50%); }
+        .skill-node:nth-child(7){ top:50%; left:50%; transform:translate(-50%, -50%); }
+
+        .skill-details { 
+            width:100%; 
+            max-width:860px; 
+            margin-top:18px; 
+        }
+        
+        .detail-panel { 
+            display:none; 
+            padding:20px; 
+            background:var(--glass); 
+            border:1px solid var(--glass-border); 
+            border-radius:12px; 
+        }
+        
+        .detail-panel.active { 
+            display:block; 
+            animation:fadeIn .3s ease 
+        }
+
+        /* Services grid */
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-top: 30px;
+        }
+
+        .service-card {
+            background: var(--glass);
+            border-radius: var(--card-radius);
+            padding: 30px;
+            border: 1px solid var(--glass-border);
+            text-align: center;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .service-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0, 243, 255, 0.05), transparent);
+            transition: left 0.6s ease;
+        }
+
+        .service-card:hover::before {
+            left: 100%;
+        }
+
+        .service-card:hover {
+            border-color: var(--primary-holo);
+            transform: translateY(-8px);
+        }
+
+        .service-icon {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            color: var(--primary-holo);
+        }
+
+        .service-card h3 {
+            font-family: 'Orbitron', monospace;
+            color: var(--primary-holo);
+            margin-bottom: 15px;
+            font-size: 1.4rem;
+        }
+
+        .service-card p {
+            color: rgba(255, 255, 255, 0.8);
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .service-features {
+            text-align: left;
+            margin-top: 20px;
+        }
+
+        .service-feature {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.9rem;
+        }
+
+        .service-feature::before {
+            content: '▸';
+            color: var(--primary-holo);
+            margin-right: 10px;
+            font-weight: bold;
+        }
+
+        /* Testimonials grid */
+        .testimonials-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 25px;
+            margin-top: 30px;
+        }
+
+        .testimonial-card {
+            background: var(--glass);
+            border-radius: var(--card-radius);
+            padding: 30px;
+            border: 1px solid var(--glass-border);
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .testimonial-card::before {
+            content: '"';
+            position: absolute;
+            top: 10px;
+            left: 20px;
+            font-size: 4rem;
+            color: var(--primary-holo);
+            opacity: 0.2;
+            font-family: serif;
+        }
+
+        .testimonial-card:hover {
+            border-color: var(--primary-holo);
+            transform: translateY(-5px);
+        }
+
+        .testimonial-text {
+            color: rgba(255, 255, 255, 0.9);
+            line-height: 1.6;
+            margin-bottom: 20px;
+            font-style: italic;
+            position: relative;
+            z-index: 2;
+        }
+
+        .testimonial-author {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            border-top: 1px solid var(--glass-border);
+            padding-top: 20px;
+        }
+
+        .author-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, var(--primary-holo), var(--secondary-holo));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--deep-space);
+            font-family: 'Orbitron', monospace;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+
+        .author-info h4 {
+            color: var(--primary-holo);
+            margin-bottom: 5px;
+            font-family: 'Orbitron', monospace;
+        }
+
+        .author-info p {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.85rem;
+        }
+
+        /* Portfolio grid */
+        .portfolio-grid { 
+            display:grid; 
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); 
+            gap:22px; 
+            margin-top:16px; 
+        }
+        
+        .holo-card.project { 
+            height:420px; 
+            position:relative; 
+            overflow:hidden; 
+        }
+        
+        .card-glitch { 
+            position:absolute; 
+            top:0; 
+            left:0; 
+            width:100%; 
+            height:65%; 
+            background:linear-gradient(45deg,var(--primary-holo),var(--secondary-holo)); 
+            opacity:0.07 
+        }
+        
+        .card-content { 
+            position:absolute; 
+            bottom:0; 
+            left:0; 
+            right:0; 
+            padding:16px; 
+            background: linear-gradient(180deg, rgba(10,14,23,0.85), rgba(10,14,23,0.95)); 
+        }
+        
+        .card-content h3 { 
+            font-family:'Orbitron', monospace; 
+            color:var(--primary-holo); 
+            margin-bottom:6px 
+        }
+        
+        .card-content p { 
+            color:rgba(255,255,255,0.75); 
+            font-size:.92rem 
+        }
+
+        /* Contact */
+        .contact-interface { 
+            display:grid; 
+            grid-template-columns: 1fr 1fr; 
+            gap:28px; 
+            margin-top:12px; 
+        }
+        
+        @media(max-width:880px){ 
+            .contact-interface { 
+                grid-template-columns:1fr 
+            } 
+        }
+        
+        .transmission-pad, .feedback-pad { 
+            background:var(--glass); 
+            border:1px solid var(--glass-border); 
+            border-radius:12px; 
+            padding:18px; 
+        }
+        
+        .input-holo { 
+            margin-bottom:14px 
+        }
+        
+        .input-holo label { 
+            display:block; 
+            margin-bottom:8px; 
+            font-family:'Orbitron', monospace; 
+            font-size:13px; 
+            color:var(--primary-holo) 
+        }
+        
+        .holo-input input, .holo-input textarea { 
+            width:100%; 
+            padding:12px 14px; 
+            background: rgba(0,0,0,0.12); 
+            border:1px solid rgba(255,255,255,0.04); 
+            border-radius:10px; 
+            color:var(--primary-holo); 
+            font-family:'Exo 2', sans-serif; 
+            font-size:1rem 
+        }
+        
+        .holo-input input::placeholder, .holo-input textarea::placeholder { 
+            color: rgba(0,243,255,0.35) 
+        }
+        
+        .holo-input input:focus, .holo-input textarea:focus { 
+            outline:none; 
+            border-color:var(--primary-holo); 
+            box-shadow:0 0 16px rgba(0,243,255,0.12) 
+        }
+        
+        .transmit-btn { 
+            width:100%; 
+            padding:12px; 
+            background: linear-gradient(90deg,var(--primary-holo),var(--secondary-holo)); 
+            border:none; 
+            border-radius:10px; 
+            color:var(--deep-space); 
+            font-family:'Orbitron', monospace; 
+            font-weight:800; 
+            cursor:pointer; 
+        }
+        
+        .transmit-btn.secondary { 
+            background:var(--glass); 
+            color:var(--primary-holo); 
+            border:1px solid var(--primary-holo) 
+        }
+        
+        .transmit-btn:hover { 
+            transform:translateY(-3px); 
+            box-shadow:0 8px 30px rgba(0,243,255,0.12) 
+        }
+
+        /* Newsletter */
+        .newsletter-holo { 
+            text-align:center; 
+            background:var(--glass); 
+            border:1px solid var(--glass-border); 
+            border-radius:12px; 
+            padding:36px; 
+            max-width:760px; 
+            margin:0 auto 
+        }
+        
+        .newsletter-form { 
+            display:flex; 
+            gap:12px; 
+            max-width:600px; 
+            margin:12px auto 0 
+        }
+        
+        .newsletter-form .holo-input { 
+            flex:1 
+        }
+
+        /* Animations */
+        @keyframes rotate { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
+        @keyframes pulse { from{ opacity:.45; transform:scale(.96)} to{opacity:1; transform:scale(1)} }
+        @keyframes fadeIn { from{opacity:0; transform:translateY(18px)} to{opacity:1; transform:none} }
+        @keyframes twinkle { from{opacity:0.6} to{opacity:1} }
+
+        /* Reveal animation */
+        .reveal {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.4s ease, transform 0.4s ease;
+        }
+
+        .reveal.revealed {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Tech tags */
+        .tech-tags {
+            margin-top: 15px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .tech-tag {
+            background: rgba(0, 243, 255, 0.1);
+            color: var(--primary-holo);
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-family: 'Orbitron', monospace;
+            border: 1px solid rgba(0, 243, 255, 0.2);
+        }
+
+        /* Stats */
+        .data-stats {
+            margin-top: 18px;
+            display: flex;
+            gap: 24px;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-family: 'Orbitron', monospace;
+            font-size: 1.8rem;
+            color: var(--primary-holo);
+            text-shadow: 0 0 10px var(--text-glow);
+        }
+
+        .stat-label {
+            font-size: 0.85rem;
+            color: var(--muted);
+            margin-top: 5px;
+        }
+
+        /* Responsive */
+        @media (max-width: 880px){
+            .about-grid{ grid-template-columns: 1fr; }
+            .skills-orb{ width:320px; height:320px }
+            .portfolio-grid{ grid-template-columns: 1fr }
+            .holo-card{ padding:16px }
+            .data-stats {
+                flex-direction: column;
+                gap: 15px;
+            }
+        }
+    </style>
+</body>
+</html>
